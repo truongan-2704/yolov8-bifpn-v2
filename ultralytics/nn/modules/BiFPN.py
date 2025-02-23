@@ -36,36 +36,36 @@ class Conv(nn.Module):
         return self.act(self.conv(x))
 
 
-# class BiFPN_Concat(nn.Module):
-#     def __init__(self, dimension=1, num_inputs=2, use_relu=True):
-#         super(BiFPN_Concat, self).__init__()
-#         self.d = dimension
-#         self.num_inputs = num_inputs
-#         self.use_relu = True  # Cho phép lựa chọn dùng ReLU hay không
+class BiFPN_Concat(nn.Module):
+    def __init__(self, dimension=1, num_inputs=2, use_relu=True):
+        super(BiFPN_Concat, self).__init__()
+        self.d = dimension
+        self.num_inputs = num_inputs
+        self.use_relu = True  # Cho phép lựa chọn dùng ReLU hay không
 
-#         # Khởi tạo trọng số học được
-#         self.w = nn.Parameter(torch.ones(num_inputs, dtype=torch.float32), requires_grad=True)
-#         self.epsilon = 1e-4
+        # Khởi tạo trọng số học được
+        self.w = nn.Parameter(torch.ones(num_inputs, dtype=torch.float32), requires_grad=True)
+        self.epsilon = 1e-4
 
-#     def forward(self, x):
-#         # Kiểm tra đầu vào chặt chẽ
-#         if not isinstance(x, list) or len(x) != self.num_inputs:
-#             raise ValueError(
-#                 f"Input must be a list of {self.num_inputs} tensors. "
-#                 f"Received: {type(x)} with length {len(x)}"
-#             )
+    def forward(self, x):
+        # Kiểm tra đầu vào chặt chẽ
+        if not isinstance(x, list) or len(x) != self.num_inputs:
+            raise ValueError(
+                f"Input must be a list of {self.num_inputs} tensors. "
+                f"Received: {type(x)} with length {len(x)}"
+            )
 
-#         # Xử lý trọng số (ReLU tùy chọn)
-#         w = self.w
-#         if self.use_relu:
-#             w = F.relu(w)  # Đảm bảo trọng số không âm
+        # Xử lý trọng số (ReLU tùy chọn)
+        w = self.w
+        if self.use_relu:
+            w = F.relu(w)  # Đảm bảo trọng số không âm
 
-#         # Chuẩn hóa trọng số
-#         weight = w / (torch.sum(w, dim=0) + self.epsilon)
+        # Chuẩn hóa trọng số
+        weight = w / (torch.sum(w, dim=0) + self.epsilon)
 
-#         # Áp dụng trọng số và concatenate
-#         weighted_features = [weight[i] * x[i] for i in range(self.num_inputs)]
-#         return torch.cat(weighted_features, dim=self.d)
+        # Áp dụng trọng số và concatenate
+        weighted_features = [weight[i] * x[i] for i in range(self.num_inputs)]
+        return torch.cat(weighted_features, dim=self.d)
 
 # class BiFPN_Concat(nn.Module):
 #     def __init__(self, dimension=1):
@@ -106,19 +106,18 @@ class Conv(nn.Module):
 #         x_weighted = [weight[i] * x[i] for i in range(len(x))]  # Nhân từng phần tử với trọng số
 #         return torch.cat(x_weighted, dim=self.d)  # Nối tensor theo chiều được chỉ định
 
-class BiFPN_Concat(nn.Module):
-    def __init__(self, dimension=1):
-        super(BiFPN_Concat, self).__init__()
-        self.d = dimension
-        self.w = nn.Parameter(torch.ones(3, dtype=torch.float32), requires_grad=True)
-        self.epsilon = 0.0001
+# class BiFPN_Concat(nn.Module):
+#     def __init__(self, dimension=1):
+#         super(BiFPN_Concat, self).__init__()
+#         self.d = dimension
+#         self.w = nn.Parameter(torch.ones(3, dtype=torch.float32), requires_grad=True)
+#         self.epsilon = 0.0001
 
-    def forward(self, x):
-            w = self.w
-            weight = w / (torch.sum(w, dim=0) + self.epsilon)
-            x = [weight[0] * x[0], weight[1] * x[1]]
-            return torch.cat(x, self.d)
-
+#     def forward(self, x):
+#             w = self.w
+#             weight = w / (torch.sum(w, dim=0) + self.epsilon)
+#             x = [weight[0] * x[0], weight[1] * x[1]]
+#             return torch.cat(x, self.d)
 
 
 # class BiFPN_Concat(nn.Module):
