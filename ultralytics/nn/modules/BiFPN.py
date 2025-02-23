@@ -120,6 +120,7 @@ class BiFPN_Concat(nn.Module):
             return torch.cat(x, self.d)
 
 
+
 # class BiFPN_Concat(nn.Module):
 #     def __init__(self, c1, c2):
 #         super(BiFPN_Concat, self).__init__()
