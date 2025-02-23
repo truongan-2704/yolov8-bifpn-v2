@@ -67,44 +67,44 @@ class Conv(nn.Module):
 #         weighted_features = [weight[i] * x[i] for i in range(self.num_inputs)]
 #         return torch.cat(weighted_features, dim=self.d)
 
-class BiFPN_Concat(nn.Module):
-    def __init__(self, dimension=1):
-        super(BiFPN_Concat, self).__init__()
-        self.d = dimension
-        self.w = nn.Parameter(torch.ones(2, dtype=torch.float32), requires_grad=True)  # Sửa kích thước weight
-        self.epsilon = 0.0001
-
-    def forward(self, x):
-        w = self.w
-        weight = w / (torch.sum(w, dim=0) + self.epsilon)
-
-        # Kiểm tra số lượng đặc trưng
-        if len(x) < len(weight):
-            raise ValueError(f"Số lượng đặc trưng đầu vào ({len(x)}) ít hơn số lượng trọng số ({len(weight)})")
-
-        # Weighted feature fusion
-        weighted_features = [weight[i] * x[i] for i in range(len(x))]
-
-        # Concatenate weighted features
-        fused_features = torch.cat(weighted_features, dim=self.d)
-        return fused_features
-
 # class BiFPN_Concat(nn.Module):
-#     def __init__(self, dimension=1, num_inputs=2):
+#     def __init__(self, dimension=1):
 #         super(BiFPN_Concat, self).__init__()
 #         self.d = dimension
-#         self.w = nn.Parameter(torch.ones(num_inputs, dtype=torch.float32), requires_grad=True)
-#         self.epsilon = 1e-4
+#         self.w = nn.Parameter(torch.ones(2, dtype=torch.float32), requires_grad=True)  # Sửa kích thước weight
+#         self.epsilon = 0.0001
 
 #     def forward(self, x):
-#         if not isinstance(x, list) or len(x) != len(self.w):
-#             raise ValueError(f"Expected input to be a list of {len(self.w)} tensors, but got {type(x)} with length {len(x)}")
+#         w = self.w
+#         weight = w / (torch.sum(w, dim=0) + self.epsilon)
 
-#         w = F.relu(self.w)  # Áp dụng ReLU để tránh giá trị âm
-#         weight = w / (torch.sum(w, dim=0) + self.epsilon)  # Chuẩn hóa trọng số
+#         # Kiểm tra số lượng đặc trưng
+#         if len(x) < len(weight):
+#             raise ValueError(f"Số lượng đặc trưng đầu vào ({len(x)}) ít hơn số lượng trọng số ({len(weight)})")
 
-#         x_weighted = [weight[i] * x[i] for i in range(len(x))]  # Nhân từng phần tử với trọng số
-#         return torch.cat(x_weighted, dim=self.d)  # Nối tensor theo chiều được chỉ định
+#         # Weighted feature fusion
+#         weighted_features = [weight[i] * x[i] for i in range(len(x))]
+
+#         # Concatenate weighted features
+#         fused_features = torch.cat(weighted_features, dim=self.d)
+#         return fused_features
+
+class BiFPN_Concat(nn.Module):
+    def __init__(self, dimension=1, num_inputs=2):
+        super(BiFPN_Concat, self).__init__()
+        self.d = dimension
+        self.w = nn.Parameter(torch.ones(num_inputs, dtype=torch.float32), requires_grad=True)
+        self.epsilon = 1e-4
+
+    def forward(self, x):
+        if not isinstance(x, list) or len(x) != len(self.w):
+            raise ValueError(f"Expected input to be a list of {len(self.w)} tensors, but got {type(x)} with length {len(x)}")
+
+        w = F.relu(self.w)  # Áp dụng ReLU để tránh giá trị âm
+        weight = w / (torch.sum(w, dim=0) + self.epsilon)  # Chuẩn hóa trọng số
+
+        x_weighted = [weight[i] * x[i] for i in range(len(x))]  # Nhân từng phần tử với trọng số
+        return torch.cat(x_weighted, dim=self.d)  # Nối tensor theo chiều được chỉ định
 
 # class BiFPN_Concat(nn.Module):
 #     def __init__(self, dimension=1):
