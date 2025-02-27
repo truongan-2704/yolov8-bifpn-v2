@@ -9,6 +9,7 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
+from sympy.physics.units import length
 
 from ultralytics.nn.modules import (
     AIFI,
@@ -84,7 +85,7 @@ from ultralytics.utils.torch_utils import (
     time_sync,
 )
 
-from ultralytics.nn.modules import (BiFPN_Concat, BiFPN_Concat2, BiFPN_Concat3)
+from ultralytics.nn.modules import (BiFPN_Concat, BiFPN)
 
 try:
     import thop
@@ -998,10 +999,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             RepC3,
             PSA,
             SCDown,
-            C2fCIB,
-            BiFPN_Concat3,
-            BiFPN_Concat2,
-            BiFPN_Concat3
+            C2fCIB
         }:
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
@@ -1051,11 +1049,10 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             c2 = sum(ch[x] for x in f)
         elif m is BiFPN_Concat:
             c2 = sum(ch[x] for x in f)
+        elif m in {BiFPN}:
+            length = len([ch[x] for x in f])
+            args = [length]
 
-        elif m is BiFPN_Concat2:
-            c2 = sum(ch[x] for x in f)
-        elif m is BiFPN_Concat3:
-            c2 = sum(ch[x] for x in f)
         elif m in {Detect, WorldDetect, Segment, Pose, OBB, ImagePoolingAttn, v10Detect}:
             args.append([ch[x] for x in f])
             if m is Segment:
@@ -1070,9 +1067,6 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             args = [c1, c2, *args[1:]]
         elif m is CBFuse:
             c2 = ch[f[-1]]
-        # elif m is {BiFPN_Concat}:
-        #     length = len([ch[x] for x in f])
-        #     args = [length]
         else:
             c2 = ch[f]
 
