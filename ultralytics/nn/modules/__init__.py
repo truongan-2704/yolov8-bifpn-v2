@@ -16,7 +16,7 @@ Example:
     os.system(f"onnxslim {f} {f} && open {f}")  # pip install onnxslim
     ```
 """
-from .BiFPN import (BiFPN_Concat, BiFPN)
+from .BiFPN import (BiFPN_Concat, BiFPN, BiFPN_Transformer)
 
 from .block import (
     C1,
