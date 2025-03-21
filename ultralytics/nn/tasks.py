@@ -85,7 +85,7 @@ from ultralytics.utils.torch_utils import (
     time_sync,
 )
 
-from ultralytics.nn.modules import (BiFPN_Concat, BiFPN)
+from ultralytics.nn.modules import (BiFPN_Concat, BiFPN,BiFPN_Transformer)
 
 try:
     import thop
@@ -1049,7 +1049,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             c2 = sum(ch[x] for x in f)
         elif m is BiFPN_Concat:
             c2 = sum(ch[x] for x in f)
-        elif m in {BiFPN}:
+        elif m in {BiFPN, BiFPN_Transformer}:
             length = len([ch[x] for x in f])
             args = [length]
 
