@@ -348,38 +348,38 @@ class SimAM(nn.Module):
         return x * torch.sigmoid(simam_mask)
 
 
-class Bottleneck(nn.Module):
-    """Standard bottleneck with SimAM."""
-
-    def __init__(self, c1, c2, shortcut=True, g=1, k=(3, 3), e=0.5):
-        """Initializes a standard bottleneck module with optional shortcut connection and SimAM attention."""
-        super().__init__()
-        c_ = int(c2 * e)  # hidden channels
-        self.cv1 = Conv(c1, c_, k[0], 1)
-        self.cv2 = Conv(c_, c2, k[1], 1, g=g)
-        self.simam = SimAM(c2)  # 🔥 Truyền số kênh vào SimAM
-        self.add = shortcut and c1 == c2
-
-    def forward(self, x):
-        """Applies the bottleneck with SimAM."""
-        out = self.cv2(self.cv1(x))
-        out = self.simam(out)  # 🔥 Thêm SimAM
-        return x + out if self.add else out
-
 # class Bottleneck(nn.Module):
-#     """Standard bottleneck."""
+#     """Standard bottleneck with SimAM."""
 #
 #     def __init__(self, c1, c2, shortcut=True, g=1, k=(3, 3), e=0.5):
-#         """Initializes a standard bottleneck module with optional shortcut connection and configurable parameters."""
+#         """Initializes a standard bottleneck module with optional shortcut connection and SimAM attention."""
 #         super().__init__()
 #         c_ = int(c2 * e)  # hidden channels
 #         self.cv1 = Conv(c1, c_, k[0], 1)
 #         self.cv2 = Conv(c_, c2, k[1], 1, g=g)
+#         self.simam = SimAM(c2)  # 🔥 Truyền số kênh vào SimAM
 #         self.add = shortcut and c1 == c2
 #
 #     def forward(self, x):
-#         """Applies the YOLO FPN to input data."""
-#         return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))
+#         """Applies the bottleneck with SimAM."""
+#         out = self.cv2(self.cv1(x))
+#         out = self.simam(out)  # 🔥 Thêm SimAM
+#         return x + out if self.add else out
+
+class Bottleneck(nn.Module):
+    """Standard bottleneck."""
+
+    def __init__(self, c1, c2, shortcut=True, g=1, k=(3, 3), e=0.5):
+        """Initializes a standard bottleneck module with optional shortcut connection and configurable parameters."""
+        super().__init__()
+        c_ = int(c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, k[0], 1)
+        self.cv2 = Conv(c_, c2, k[1], 1, g=g)
+        self.add = shortcut and c1 == c2
+
+    def forward(self, x):
+        """Applies the YOLO FPN to input data."""
+        return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))
 
 
 class BottleneckCSP(nn.Module):
