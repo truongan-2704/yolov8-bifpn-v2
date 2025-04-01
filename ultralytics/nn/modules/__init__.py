@@ -18,6 +18,20 @@ Example:
 """
 from .BiFPN import (BiFPN_Concat, BiFPN, BiFPN_Transformer)
 
+from .EMA import EMA
+
+from .SimAM import SimAM
+
+from .ShuffleAttention import ShuffleAttention
+
+from .TripletAttention import TripletAttention
+
+from .MHSA import MHSA
+
+from .CBAM import CBAM
+
+from .ECA import ECA
+
 from .block import (
     C1,
     C2,
@@ -71,8 +85,7 @@ from .conv import (
     GhostConv,
     LightConv,
     RepConv,
-    SpatialAttention,
-    SimAM
+    SpatialAttention
 )
 from .head import OBB, Classify, Detect, Pose, RTDETRDecoder, Segment, WorldDetect, v10Detect
 from .transformer import (

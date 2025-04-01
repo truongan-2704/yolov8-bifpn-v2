@@ -331,23 +331,6 @@ class GhostBottleneck(nn.Module):
         return self.conv(x) + self.shortcut(x)
 
 
-
-class SimAM(nn.Module):
-    """SimAM Attention Module."""
-
-    def __init__(self, channels, eps=1e-7):
-        super(SimAM, self).__init__()
-        self.eps = eps
-        self.gamma = nn.Parameter(torch.zeros(1))  # Hệ số điều chỉnh
-        self.channels = channels
-
-    def forward(self, x):
-        mean = x.mean(dim=(2, 3), keepdim=True)
-        var = ((x - mean) ** 2).mean(dim=(2, 3), keepdim=True)
-        simam_mask = self.gamma * (x - mean) / (var + self.eps)
-        return x * torch.sigmoid(simam_mask)
-
-
 # class Bottleneck(nn.Module):
 #     """Standard bottleneck with SimAM."""
 #

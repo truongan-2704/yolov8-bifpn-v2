@@ -9,7 +9,6 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
-from sympy.physics.units import length
 
 from ultralytics.nn.modules import (
     AIFI,
@@ -61,8 +60,7 @@ from ultralytics.nn.modules import (
     SCDown,
     Segment,
     WorldDetect,
-    v10Detect,
-    SimAM
+    v10Detect, EMA, SimAM, CBAM, MHSA, TripletAttention, ECA, ShuffleAttention
 )
 from ultralytics.utils import DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, colorstr, emojis, yaml_load
 from ultralytics.utils.checks import check_requirements, check_suffix, check_yaml
@@ -86,7 +84,7 @@ from ultralytics.utils.torch_utils import (
     time_sync,
 )
 
-from ultralytics.nn.modules import (BiFPN_Concat, BiFPN,BiFPN_Transformer)
+from ultralytics.nn.modules import (BiFPN_Concat, BiFPN, BiFPN_Transformer)
 
 try:
     import thop
@@ -1000,8 +998,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             RepC3,
             PSA,
             SCDown,
-            C2fCIB,
-            SimAM
+            C2fCIB
         }:
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
@@ -1027,8 +1024,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 RepC3,
                 C2fPSA,
                 C2fCIB,
-                C2PSA,
-                SimAM
+                C2PSA
             }:
                 args.insert(2, n)  # number of repeats
                 n = 1
@@ -1055,7 +1051,11 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         elif m in {BiFPN, BiFPN_Transformer}:
             length = len([ch[x] for x in f])
             args = [length]
-        elif m in {SimAM}:
+        elif m in {MHSA, ShuffleAttention}:
+            args = [ch[f], *args]
+        elif m in {EMA}:
+            args = [ch[f]]
+        elif m in (SimAM, CBAM, TripletAttention, ECA):
             c1, c2 = ch[f], args[0]
             if c2 != nc:
                 c2 = make_divisible(min(c2, max_channels) * width, divisor=8)
